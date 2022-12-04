@@ -6,7 +6,7 @@ import axios from "axios";
 
 const headCells = [
     {
-      id: 'id',
+      id: 'device_id',
       label: 'DeviceID',
     },
     {
@@ -67,7 +67,10 @@ const Summary = () => {
                 <Box sx={{
                     mt: 5
                 }}>
-                    <CustomTable headCells={headCells} data={gpsData}/>
+                    <CustomTable 
+                        headCells={headCells}
+                        data={gpsData}
+                    />
                 </Box>
             </Box>
         </>

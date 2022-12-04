@@ -1,7 +1,9 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel } from "@mui/material";
+import { Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel } from "@mui/material";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PropTypes from 'prop-types';
 import { visuallyHidden } from '@mui/utils';
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -73,6 +75,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const CustomTable = ({headCells, data}) => {
+    const navigate = useNavigate();
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('id');
     const [page, setPage] = useState(0);
@@ -111,11 +114,19 @@ const CustomTable = ({headCells, data}) => {
                                 >
                                     {console.log(row)}
                                     <TableCell component="th" scope="row">
-                                        {row.id}
+                                        {row.device_id}
                                     </TableCell>
                                     <TableCell align="center">{row.device_type}</TableCell>
                                     <TableCell align="center">{row.timestamp}</TableCell>
                                     <TableCell align="center">{row.location}</TableCell>
+                                    <TableCell align="center">
+                                      <IconButton 
+                                        aria-label="details"
+                                        onClick={()=>navigate(`details/${row.device_id}`)}
+                                      >
+                                        <ArrowForwardIcon />
+                                      </IconButton>
+                                    </TableCell>
                                 </TableRow>
                                 );
                             })}

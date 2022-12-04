@@ -12,7 +12,7 @@ const WebRoute = () => {
                 <Route path="/" element={<Login/>} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/summary" element={<LayoutProvider content={<Summary />} />} />
-                <Route path="/details" element={<LayoutProvider content={<Details />} />} />
+                <Route path="/summary/details/:device_id" element={<LayoutProvider content={<Details />} />} />
             </Routes>
         </BrowserRouter>
     )
