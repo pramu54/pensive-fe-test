@@ -3,8 +3,13 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import axios from 'axios';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+//default baseUrl
+axios.defaults.baseURL="http://52.74.166.134:3000";
+
 root.render(
   <React.StrictMode>
     <App />
