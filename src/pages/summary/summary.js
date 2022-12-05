@@ -27,6 +27,8 @@ const headCells = [
 const Summary = () => {
     const navigate = useNavigate();
     const [gpsData, setGpsData] = useState([]);
+    const [searchInput, setSearchInput] = useState("");
+    const [newGpsData, setNewGpsData] = useState([]);
 
     const getData = async() => {
       await axios
@@ -37,6 +39,7 @@ const Summary = () => {
       .then((res) => {
             const { data } = res;
             setGpsData(data);
+            setNewGpsData(data);
       })
       .catch((err) => {
           console.log(err.response);
@@ -50,6 +53,24 @@ const Summary = () => {
             navigate("/")
         }
     }, [])
+
+    useEffect(()=>{
+        setNewGpsData(gpsData.filter(
+            (el) =>
+                    el.device_id
+                      .toLowerCase()
+                      .includes(searchInput.toLowerCase()) ||
+                    el.device_type
+                      .toLowerCase()
+                      .includes(searchInput.toLowerCase())
+            ))
+    }, [searchInput])
+
+    const handleSearch = (e) => {
+        const value = e.target.value;
+        setSearchInput(value);
+        
+    }
 
     return(
         <>
@@ -67,14 +88,14 @@ const Summary = () => {
                 <Box sx={{
                     mt: 5
                 }}>
-                    <SearchField />
+                    <SearchField onChangeSearch={(e)=>handleSearch(e)}/>
                 </Box>
                 <Box sx={{
                     mt: 5
                 }}>
                     <CustomTable 
                         headCells={headCells}
-                        data={gpsData}
+                        data={newGpsData}
                     />
                 </Box>
             </Box>

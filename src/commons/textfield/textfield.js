@@ -80,7 +80,7 @@ const EmailField = ({onChange, emailValue, isError, helperText}) => {
     )
 }
 
-const SearchField = () => {
+const SearchField = ({onChangeSearch}) => {
     return(
         <>
             <FormControl variant="outlined">
@@ -96,6 +96,7 @@ const SearchField = () => {
                     sx={{
                         width: "250px"
                     }}
+                    onChange={onChangeSearch}
                 />
             </FormControl>
         </>
