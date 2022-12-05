@@ -1,7 +1,8 @@
 import { Box, Container, Link, Typography } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AlertBox from "../../commons/alert/alert";
 import { PrimaryButton } from "../../commons/buttons/button";
 import { EmailField, PasswordField } from "../../commons/textfield/textfield";
 
@@ -9,6 +10,9 @@ const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleEmail = (e) => {
         const value = e.target.value;
@@ -19,6 +23,15 @@ const Login = () => {
         const value = e.target.value;
         setPassword(value);
     };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setIsOpen(false);
+    };
+
 
     const onLogin = () => {
         axios
@@ -34,9 +47,19 @@ const Login = () => {
             localStorage.setItem("token", loginToken);
             navigate("/summary");
         }).catch((err)=>{
-            console.log(err.response);
+            const { data } = err.response;
+            setErrorMessage(data.response.message);
+            setIsOpen(true);
         })
     }
+
+    useEffect(()=>{
+        if(email==="" || password===""){
+            setIsDisabled(true);
+        } else {
+            setIsDisabled(false);
+        }
+    }, [email, password])
 
     return(
         <>
@@ -58,34 +81,47 @@ const Login = () => {
                         alignItems: 'center',
                         padding: 4
                     }}>
-                            <Box>
-                                <h2>Login</h2>
-                            </Box>
-                            <Box sx={{marginTop: '20px'}}>
-                                <EmailField onChange={(e)=>handleEmail(e)} emailValue={email}/>
-                            </Box>
-                            <Box sx={{marginTop: '10px'}}>
-                                <PasswordField onChange={(e)=>handlePassword(e)} passwordValue={password}/>
-                            </Box>
-                            <Box sx={{marginTop: '10px'}}>
-                                <PrimaryButton onClick={onLogin} label="Login"/>
-                            </Box>
-                            <Box sx={{
-                                marginTop: '10px',
-                                display: 'flex',
-                            }}>
-                                <Typography variant="body2">Don't have an account?</Typography>
-                                <Link
-                                    component="button"
-                                    variant="body2"
-                                    onClick={()=>navigate("/register")} 
-                                >
-                                    Register
-                                </Link>
-                            </Box>
+                        <Box>
+                            <h2>Login</h2>
+                        </Box>
+                        <Box sx={{marginTop: '20px'}}>
+                            <EmailField 
+                                onChange={(e)=>handleEmail(e)} 
+                                emailValue={email}
+                            />
+                        </Box>
+                        <Box sx={{marginTop: '10px'}}>
+                            <PasswordField
+                                onChange={(e)=>handlePassword(e)}
+                                passwordValue={password}
+                            />
+                        </Box>
+                        <Box sx={{marginTop: '10px'}}>
+                            <PrimaryButton onClick={onLogin} label="Login" isDisabled={isDisabled}/>
+                        </Box>
+                        <Box sx={{
+                            marginTop: '10px',
+                            display: 'flex',
+                        }}>
+                            <Typography variant="body2">Don't have an account?</Typography>
+                            <Link
+                                component="button"
+                                variant="body2"
+                                onClick={()=>navigate("/register")} 
+                            >
+                                Register
+                            </Link>
+                        </Box>
                     </Box>
                 </Box>
             </Container>
+            <AlertBox 
+                isOpen={isOpen} 
+                severity="error" 
+                message={errorMessage} 
+                handleClose={handleClose} 
+                onCloseClick={() => {setIsOpen(false)}}
+            />
         </>
     )
 }

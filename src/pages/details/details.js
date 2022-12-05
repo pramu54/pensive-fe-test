@@ -1,32 +1,56 @@
 import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import Chart from 'react-apexcharts';
+import { useNavigate, useParams } from "react-router-dom";
 
 const Details = () => {
+    const navigate = useNavigate();
     const params = useParams();
     const [gpsDetails, setGpsDetails] = useState([]);
+    const [gpsLocations, setGpsLocations] = useState([]);
+    const [isReady, setIsReady] = useState(false);
+    const [totalLocations, setTotalLocations] = useState(0);
+    const datas = {};
 
-    const getDetails = async() => {
-        await axios
+    const getDetails = () => {
+        axios
         .get(`/api/${params.device_id}`, {
             headers : {
                   Authorization : `Bearer ${localStorage.getItem('token')}`
             }})
         .then((res) => {
-              const { data } = res;
-              setGpsDetails(data);
-              console.log(data);
+            const { data } = res;
+            setGpsDetails(data);
+            let labels = data.map(a => a.location);
+            setGpsLocations(labels);
+            setTotalLocations(labels.length)
         })
         .catch((err) => {
             console.log(err.response);
+        }).finally(()=>{
+            setIsReady(true);
         });
-      }
+    }
   
-      useEffect(()=>{
-        getDetails();
-      }, [])
+    useEffect(()=>{
+        if(localStorage.getItem("token")!==null){
+            getDetails();
+        } else {
+            navigate("/")
+        }
+    }, [])
 
+    for (const num of gpsLocations) {
+        datas[num] = datas[num] ? datas[num] + 1 : 1;
+    }
+
+    let uniqueLocations = [...new Set(gpsLocations)];
+    
+    const options={
+        labels: uniqueLocations,
+    }
+     
     return(
         <>
             <Box sx={{
@@ -38,8 +62,11 @@ const Details = () => {
                 borderRadius: 1
             }}>
                 <Box>
-                    <Typography variant="h4">{gpsDetails[0].device_id}</Typography>
-                    <Typography variant="h5">{gpsDetails[0].device_type}</Typography>
+                    <Typography variant="h4">{params.device_id}</Typography>
+                    {isReady === true &&
+                        <Typography variant="h5">{gpsDetails[0].device_type}</Typography>
+                    }
+                    {console.log(totalLocations)}
                     <Box sx={{
                         mt: 5
                     }}>
@@ -83,7 +110,7 @@ const Details = () => {
                                     borderRadius: 1,
                                     padding: 3
                                 }}>
-                                    {/* <Typography variant="h4">{gpsDetails[0].device_id}</Typography> */}
+                                    <Chart options={options} series={Object.values(datas)} type="pie" width="400" />
                                 </Box>
                             </Grid>
                         </Grid>

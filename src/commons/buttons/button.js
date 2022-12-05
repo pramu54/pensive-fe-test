@@ -1,12 +1,13 @@
 import { Button } from "@mui/material"
 
-const PrimaryButton = ({onClick, label}) => {
+const PrimaryButton = ({onClick, label, isDisabled}) => {
     return(
         <>
             <Button 
                 color='primary'
                 variant="contained"
                 onClick={onClick}
+                disabled={isDisabled}
             >
                 {label}
             </Button>

@@ -60,12 +60,13 @@ const PasswordField = ({onChange, passwordValue}) => {
     )
 }
 
-const EmailField = ({onChange, emailValue}) => {
+const EmailField = ({onChange, emailValue, isError, helperText}) => {
 
     return(
         <>
             <TextField 
                 required
+                error={isError}
                 id="outlined-required-email"
                 label="Email"
                 variant="standard"
@@ -73,6 +74,7 @@ const EmailField = ({onChange, emailValue}) => {
                 placeholder="Enter your email"
                 onChange={onChange}
                 sx={{width: '250px'}}
+                helperText={helperText}
             />
         </>
     )

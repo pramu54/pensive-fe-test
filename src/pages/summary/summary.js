@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { SearchField } from "../../commons/textfield/textfield";
 import CustomTable from "../../commons/table/table";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const headCells = [
     {
@@ -24,6 +25,7 @@ const headCells = [
 ];
 
 const Summary = () => {
+    const navigate = useNavigate();
     const [gpsData, setGpsData] = useState([]);
 
     const getData = async() => {
@@ -33,7 +35,6 @@ const Summary = () => {
                 Authorization : `Bearer ${localStorage.getItem('token')}`
           }})
       .then((res) => {
-            console.log(res);
             const { data } = res;
             setGpsData(data);
       })
@@ -43,7 +44,11 @@ const Summary = () => {
     }
 
     useEffect(()=>{
-        getData();
+        if(localStorage.getItem("token")!==null){
+            getData();
+        } else {
+            navigate("/")
+        }
     }, [])
 
     return(

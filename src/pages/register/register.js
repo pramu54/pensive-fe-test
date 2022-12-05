@@ -1,6 +1,6 @@
 import { Box, Container, Link, Typography } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from "../../commons/buttons/button";
 import { EmailField, PasswordField, TextField1 } from "../../commons/textfield/textfield";
@@ -9,7 +9,10 @@ const Register = () => {
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [isEmailError, setIsEmailError] = useState(false);
+    const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState("");
+    const [isDisabled, setIsDisabled] = useState(false);
 
     const handleName = (e) => {
         const value = e.target.value;
@@ -35,13 +38,30 @@ const Register = () => {
                 password: password.toString() 
             })
         .then((res)=>{
-            console.log(res);
+            navigate("/");
         }).catch((err)=>{
             console.log(err);
-        }).finally(()=>{
-            navigate("/")
-        })
+        });
     }
+
+    useEffect(()=>{
+        if(name==="" || email==="" || password===""){
+            setIsDisabled(true);
+        } else {
+            setIsDisabled(false);
+        }
+    }, [name, email, password])
+
+    useEffect(()=>{
+        let regexpEmail = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$");
+        if (!regexpEmail.test(email)) {
+            setIsEmailError(true);
+            setEmailError("Email is invalid");
+        } else {
+            setIsEmailError(false);
+            setEmailError("");
+        }
+    }, [email])
 
     return(
         <>
@@ -73,24 +93,23 @@ const Register = () => {
                                     placeholder="Insert your fullname" 
                                     onChange={(e)=>handleName(e)}
                                 />
-                                {console.log("name: " ,name)}
                             </Box>
                             <Box sx={{marginTop: '10px'}}>
                                 <EmailField 
                                     onChange={(e)=>handleEmail(e)} 
                                     emailValue={email}
+                                    isError={isEmailError}
+                                    helperText={emailError}
                                 />
-                                {console.log("email: " ,email)}
                             </Box>
                             <Box sx={{marginTop: '10px'}}>
                                 <PasswordField 
                                     onChange={(e)=>handlePassword(e)} 
                                     passwordValue={password}
                                 />
-                                {console.log("password: " ,password)}
                             </Box>
                             <Box sx={{marginTop: '10px'}}>
-                                <PrimaryButton onClick={onRegister} label="Register"/>
+                                <PrimaryButton onClick={onRegister} label="Register" isDisabled={isDisabled}/>
                             </Box>
                             <Box sx={{
                                 marginTop: '10px',
